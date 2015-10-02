@@ -1,0 +1,25 @@
+{
+  "name": "ampersand-jsonapi-model",
+  "version": "0.0.1",
+  "description": "JSON-API compatible AmpersandJS Model",
+  "main": "ampersand-jsonapi-model.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobholt/ampersand-jsonapi-model.git"
+  },
+  "keywords": [
+    "jsonapi",
+    "model",
+    "ampersand",
+    "state"
+  ],
+  "author": "Bob Holt",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bobholt/ampersand-jsonapi-model/issues"
+  },
+  "homepage": "https://github.com/bobholt/ampersand-jsonapi-model#readme"
+}
