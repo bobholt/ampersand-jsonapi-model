@@ -1,25 +1,56 @@
 {
   "name": "ampersand-jsonapi-model",
+  "description": "An extension to ampersand-model that adds methods and properties for working with JSON-API.",
   "version": "0.0.1",
-  "description": "JSON-API compatible AmpersandJS Model",
-  "main": "ampersand-jsonapi-model.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "author": "Bob Holt",
+  "files": [
+    "bin/ampersand-jsonapi-model.js"
+  ],
+  "bugs": {
+    "url": "https://github.com/bobholt/ampersand-jsonapi-model/issues"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bobholt/ampersand-jsonapi-model.git"
+  "dependencies": {
+    "ampersand-jsonapi-ajaxconfig": "^1.1.1",
+    "ampersand-model": "^6.0.2",
+    "lodash.assign": "^3.2.0",
+    "lodash.foreach": "^3.0.3"
   },
+  "devDependencies": {
+    "babel-cli": "^6.1.1",
+    "babel-preset-es2015": "^6.0.15",
+    "babelify": "^7.2.0",
+    "browserify": "^8.1.0",
+    "eslint": "^1.8.0",
+    "jsdoc": "^3.3.3",
+    "jsdoc-babel": "^0.1.0",
+    "phantomjs": "^1.9.18",
+    "tap-spec": "^2.1.2",
+    "tape": "^3.0.3",
+    "tape-run": "^0.3.0"
+  },
+  "homepage": "https://github.com/bobholt/ampersand-jsonapi-model#readme",
   "keywords": [
     "jsonapi",
     "model",
     "ampersand",
     "state"
   ],
-  "author": "Bob Holt",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/bobholt/ampersand-jsonapi-model/issues"
+  "main": "src/ampersand-jsonapi-model.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobholt/ampersand-jsonapi-model.git"
   },
-  "homepage": "https://github.com/bobholt/ampersand-jsonapi-model#readme"
+  "scripts": {
+    "build": "babel ./src/ampersand-jsonapi-model.js --out-file bin/ampersand-jsonapi-model.js",
+    "jsdoc": "jsdoc -R README.md ./src/ampersand-jsonapi-model.js -c jsdoc.json -d docs",
+    "lint": "npm run lint-src && npm run lint-test",
+    "lint-src": "eslint src/**",
+    "lint-test": "eslint test/**",
+    "preversion": "git checkout master && git pull && npm ls && npm run test",
+    "publish-patch": "npm run preversion && npm version patch && git push origin master --tags && npm publish",
+    "publish-minor": "npm run preversion && npm version minor && git push origin master --tags && npm publish",
+    "publish-major": "npm run preversion && npm version major && git push origin master --tags && npm publish" ,
+    "test": "npm run lint && npm run build && browserify test/*.js -t [ babelify ] | tape-run | tap-spec"
+  }
 }

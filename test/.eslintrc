@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "../eslint/eslint-defaults.json",
+    "../eslint/eslint-node.json",
+    "../eslint/eslint-es6.json"
+  ],
+  "globals": {
+  	"t": true
+  },
+  "env": {
+    "browser": true
+  },
+  "rules": {
+  	"max-len": 0,
+    "no-console": 0,
+    "no-undefined": 0,
+    "no-unused-vars": 0,
+  }
+}
