@@ -882,7 +882,7 @@ const Backbone = {
     t.plan(4);
     const Model = Backbone.Model.extend({id: 1});
     const model = new Model({parent_id: 1});
-    model.set({a: 1, b: 2, d: 4, e: 5});
+    model.set({a: 1, b: 3, d: 6, e: 5});
     model.save({b: 2, d: 4}, {patch: true, wait: true});
     t.equal(env.syncArgs.method, 'patch');
     // MODIFIED FOR JSONAPI

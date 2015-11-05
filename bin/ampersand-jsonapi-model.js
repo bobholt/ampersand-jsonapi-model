@@ -280,9 +280,12 @@ var JSONAPIModel = _ampersandModel2.default.extend(_ampersandJsonapiAjaxconfig2.
         clonedModel.set(attrs);
 
         if (method === 'patch') {
-          var serialized = clonedModel.serialize();
-          serialized.data.attributes = attrs;
-          options.attrs = serialized;
+          options.attrs = {
+            data: {
+              type: _this.type,
+              attributes: clonedModel.changedAttributes()
+            }
+          };
         } else {
           options.attrs = clonedModel.serialize();
         }

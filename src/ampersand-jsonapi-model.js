@@ -259,10 +259,14 @@ const JSONAPIModel = AmpersandModel.extend(ajaxConfig, {
       });
       clonedModel.set(attrs);
 
+
       if (method === 'patch') {
-        const serialized = clonedModel.serialize();
-        serialized.data.attributes = attrs;
-        options.attrs = serialized;
+        options.attrs = {
+          data: {
+            type: this.type,
+            attributes: clonedModel.changedAttributes(),
+          },
+        };
       }
       else {
         options.attrs = clonedModel.serialize();
