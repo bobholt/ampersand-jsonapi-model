@@ -27,13 +27,13 @@ The following methods have been overridden:
 ### getAttributes model.getAttributes([options, raw])
 
 This adds additional options for returning `children` and `collections` along
-with the standard `session`, `props`, and `derived options.
+with the standard `session`, `props`, and `derived` options.
 
 ### parse model.parse(data)
 
 This has been augmented to parse JSON-API formatted data: specifically a
 format in which model attributes are nested within the structure
-`{ data: attributes: {} }`.
+`{ data: { attributes: {} } }`.
 
 ### save model.save([attributes], [options])
 
