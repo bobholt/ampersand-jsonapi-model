@@ -36,7 +36,7 @@
     "state"
   ],
   "license": "MIT",
-  "main": "src/ampersand-jsonapi-model.js",
+  "main": "bin/ampersand-jsonapi-model.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bobholt/ampersand-jsonapi-model.git"
