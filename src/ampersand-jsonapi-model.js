@@ -18,26 +18,25 @@ import keys from 'lodash.keys';
 import intersection from 'lodash.intersection';
 import reduce from 'lodash.reduce';
 
-function transformForPatch(obj, atts) {
-  const attrKeys = keys(atts);
+function transformForPatch(obj, attrs) {
 
   if (!isObject(obj)) {
     return obj;
   }
 
-  return transform(obj, function(r, v, k) {
-    // If all attributes are within the object
-    if (intersection(keys(v), attrKeys).length === attrKeys.length) {
-      // set this object to the subset of passed-in atts
-      r[k] = reduce(attrKeys, function(redux, attrKey) {
-        redux[attrKey] = atts[attrKey];
-        return redux;
-      }, {});
-    }
-    else {
-      // run transformForPatch on the next level
-      r[k] = transformForPatch(v, atts);
-    }
+  const attrKeys = keys(attrs);
+
+  // If all attributes are within the object
+  if (intersection(keys(obj), attrKeys).length === attrKeys.length) {
+    // return the subset of passed-in attrs
+    return reduce(attrKeys, function(redux, attrKey) {
+      redux[attrKey] = attrs[attrKey];
+      return redux;
+    }, {});
+  }
+  return transform(obj, function(res, val, key) {
+    // run transformForPatch on the next level
+    res[key] = transformForPatch(val, attrs);
   });
 }
 

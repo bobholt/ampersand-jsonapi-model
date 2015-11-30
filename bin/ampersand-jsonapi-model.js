@@ -55,25 +55,25 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
                                                                                                                               * @see module:classes/json-api-collection
                                                                                                                               */
 
-function transformForPatch(obj, atts) {
-  var attrKeys = (0, _lodash12.default)(atts);
+function transformForPatch(obj, attrs) {
 
   if (!(0, _lodash6.default)(obj)) {
     return obj;
   }
 
-  return (0, _lodash10.default)(obj, function (r, v, k) {
-    // If all attributes are within the object
-    if ((0, _lodash14.default)((0, _lodash12.default)(v), attrKeys).length === attrKeys.length) {
-      // set this object to the subset of passed-in atts
-      r[k] = (0, _lodash16.default)(attrKeys, function (redux, attrKey) {
-        redux[attrKey] = atts[attrKey];
-        return redux;
-      }, {});
-    } else {
-      // run transformForPatch on the next level
-      r[k] = transformForPatch(v, atts);
-    }
+  var attrKeys = (0, _lodash12.default)(attrs);
+
+  // If all attributes are within the object
+  if ((0, _lodash14.default)((0, _lodash12.default)(obj), attrKeys).length === attrKeys.length) {
+    // return the subset of passed-in attrs
+    return (0, _lodash16.default)(attrKeys, function (redux, attrKey) {
+      redux[attrKey] = attrs[attrKey];
+      return redux;
+    }, {});
+  }
+  return (0, _lodash10.default)(obj, function (res, val, key) {
+    // run transformForPatch on the next level
+    res[key] = transformForPatch(val, attrs);
   });
 }
 
