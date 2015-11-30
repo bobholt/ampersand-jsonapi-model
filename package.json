@@ -1,7 +1,7 @@
 {
   "name": "ampersand-jsonapi-model",
   "description": "An extension to ampersand-model that adds methods and properties for working with JSON-API.",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "author": "Bob Holt",
   "files": [
     "bin/ampersand-jsonapi-model.js"
