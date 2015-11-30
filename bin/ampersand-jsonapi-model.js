@@ -337,7 +337,11 @@ var JSONAPIModel = _ampersandModel2.default.extend(_ampersandJsonapiAjaxconfig2.
   serialize: function serialize() {
     var _this2 = this;
 
-    var res = this.getAttributes({ props: true }, true);
+    var res = this.getAttributes({
+      props: true,
+      children: false,
+      collections: false
+    }, true);
     var id = res.id;
     var relationships = {};
 

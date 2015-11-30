@@ -310,7 +310,11 @@ const JSONAPIModel = AmpersandModel.extend(ajaxConfig, {
    */
   serialize() {
 
-    const res = this.getAttributes({props: true}, true);
+    const res = this.getAttributes({
+      props: true,
+      children: false,
+      collections: false,
+    }, true);
     const id = res.id;
     const relationships = {};
 
