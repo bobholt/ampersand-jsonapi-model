@@ -28,6 +28,22 @@ var _lodash7 = require('lodash.result');
 
 var _lodash8 = _interopRequireDefault(_lodash7);
 
+var _lodash9 = require('lodash.transform');
+
+var _lodash10 = _interopRequireDefault(_lodash9);
+
+var _lodash11 = require('lodash.keys');
+
+var _lodash12 = _interopRequireDefault(_lodash11);
+
+var _lodash13 = require('lodash.intersection');
+
+var _lodash14 = _interopRequireDefault(_lodash13);
+
+var _lodash15 = require('lodash.reduce');
+
+var _lodash16 = _interopRequireDefault(_lodash15);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; } /**
@@ -38,6 +54,28 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
                                                                                                                               * @see JSONAPIModel
                                                                                                                               * @see module:classes/json-api-collection
                                                                                                                               */
+
+function transformForPatch(obj, atts) {
+  var attrKeys = (0, _lodash12.default)(atts);
+
+  if (!(0, _lodash6.default)(obj)) {
+    return obj;
+  }
+
+  return (0, _lodash10.default)(obj, function (r, v, k) {
+    // If all attributes are within the object
+    if ((0, _lodash14.default)((0, _lodash12.default)(v), attrKeys).length === attrKeys.length) {
+      // set this object to the subset of passed-in atts
+      r[k] = (0, _lodash16.default)(attrKeys, function (redux, attrKey) {
+        redux[attrKey] = atts[attrKey];
+        return redux;
+      }, {});
+    } else {
+      // run transformForPatch on the next level
+      r[k] = transformForPatch(v, atts);
+    }
+  });
+}
 
 /**
  * Creates a new JSONAPI Model.
@@ -111,8 +149,8 @@ var JSONAPIModel = _ampersandModel2.default.extend(_ampersandJsonapiAjaxconfig2.
       session: false,
       props: false,
       derived: false,
-      children: false,
-      collections: false
+      children: true,
+      collections: true
     }, opts || {});
     var res = {};
     for (var item in this._definition) {
@@ -134,7 +172,9 @@ var JSONAPIModel = _ampersandModel2.default.extend(_ampersandJsonapiAjaxconfig2.
     }
     if (options.children) {
       for (var child in this._children) {
-        res[child] = this[child].getAttributes(options, raw);
+        if (this[child].getAttributes) {
+          res[child] = this[child].getAttributes(options, raw);
+        }
       }
     }
     if (options.collections) {
@@ -262,34 +302,17 @@ var JSONAPIModel = _ampersandModel2.default.extend(_ampersandJsonapiAjaxconfig2.
 
     method = this.isNew() ? 'create' : options.patch ? 'patch' : 'update';
     if (method === 'patch') {
-      options.attrs = { data: { type: this.type, attributes: attrs } };
+      options.attrs = transformForPatch(this.serialize(), attrs);
     }
     // if we're waiting we haven't actually set our attributes yet so
     // we need to do make sure we send right data
-    if (options.wait) {
-      (function () {
-        var clonedModel = new _this.constructor(_this.getAttributes({
-          props: true
-        }));
-        (0, _lodash4.default)(_this._children, function (value, modelKey) {
-          clonedModel[modelKey] = _this[modelKey];
-        });
-        (0, _lodash4.default)(_this._collections, function (value, modelKey) {
-          clonedModel[modelKey] = _this[modelKey];
-        });
-        clonedModel.set(attrs);
+    if (options.wait && method !== 'patch') {
+      var clonedModel = new this.constructor(this.getAttributes({
+        props: true
+      }));
+      clonedModel.set(attrs);
 
-        if (method === 'patch') {
-          options.attrs = {
-            data: {
-              type: _this.type,
-              attributes: clonedModel.changedAttributes()
-            }
-          };
-        } else {
-          options.attrs = clonedModel.serialize();
-        }
-      })();
+      options.attrs = clonedModel.serialize();
     }
 
     sync = this.sync(method, this, options);

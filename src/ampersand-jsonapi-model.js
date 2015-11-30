@@ -13,6 +13,33 @@ import assign from 'lodash.assign';
 import forEach from 'lodash.foreach';
 import isObject from 'lodash.isobject';
 import result from 'lodash.result';
+import transform from 'lodash.transform';
+import keys from 'lodash.keys';
+import intersection from 'lodash.intersection';
+import reduce from 'lodash.reduce';
+
+function transformForPatch(obj, atts) {
+  const attrKeys = keys(atts);
+
+  if (!isObject(obj)) {
+    return obj;
+  }
+
+  return transform(obj, function(r, v, k) {
+    // If all attributes are within the object
+    if (intersection(keys(v), attrKeys).length === attrKeys.length) {
+      // set this object to the subset of passed-in atts
+      r[k] = reduce(attrKeys, function(redux, attrKey) {
+        redux[attrKey] = atts[attrKey];
+        return redux;
+      }, {});
+    }
+    else {
+      // run transformForPatch on the next level
+      r[k] = transformForPatch(v, atts);
+    }
+  });
+}
 
 /**
  * Creates a new JSONAPI Model.
@@ -92,8 +119,8 @@ const JSONAPIModel = AmpersandModel.extend(ajaxConfig, {
       session: false,
       props: false,
       derived: false,
-      children: false,
-      collections: false,
+      children: true,
+      collections: true,
     }, opts || {});
     const res = {};
     for (const item in this._definition) {
@@ -115,7 +142,9 @@ const JSONAPIModel = AmpersandModel.extend(ajaxConfig, {
     }
     if (options.children) {
       for (const child in this._children) {
-        res[child] = this[child].getAttributes(options, raw);
+        if (this[child].getAttributes) {
+          res[child] = this[child].getAttributes(options, raw);
+        }
       }
     }
     if (options.collections) {
@@ -243,34 +272,21 @@ const JSONAPIModel = AmpersandModel.extend(ajaxConfig, {
 
     method = this.isNew() ? 'create' : (options.patch ? 'patch' : 'update');
     if (method === 'patch') {
-      options.attrs = {data: {type: this.type, attributes: attrs}};
+      options.attrs = transformForPatch(
+        this.serialize(),
+        attrs
+      );
+
     }
     // if we're waiting we haven't actually set our attributes yet so
     // we need to do make sure we send right data
-    if (options.wait) {
+    if (options.wait && method !== 'patch') {
       const clonedModel = new this.constructor(this.getAttributes({
         props: true,
       }));
-      forEach(this._children, (value, modelKey) => {
-        clonedModel[modelKey] = this[modelKey];
-      });
-      forEach(this._collections, (value, modelKey) => {
-        clonedModel[modelKey] = this[modelKey];
-      });
       clonedModel.set(attrs);
 
-
-      if (method === 'patch') {
-        options.attrs = {
-          data: {
-            type: this.type,
-            attributes: clonedModel.changedAttributes(),
-          },
-        };
-      }
-      else {
-        options.attrs = clonedModel.serialize();
-      }
+      options.attrs = clonedModel.serialize();
     }
 
     sync = this.sync(method, this, options);
